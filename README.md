@@ -4,6 +4,9 @@ $hull(p\in\mathbb{Z}^3, norml2(p)==n)$ for $n\neq 4^a(8b+7)$ is a [lattice polyh
 
 After updating <kbd>lattice_sphere_cmp.js</kbd>, run <kbd>make</kbd> and then open [index.html](index.html) in browser.
 
+You can use last pushed version on github.io:  
+https://Hermann-sw.github.io/lattice_sphere_cmp
+
 Related question:  
 https://math.stackexchange.com/questions/4917740/which-faces-does-sphere-lattice-polyhedron-operatornamehullp-in-mathbbz
 
