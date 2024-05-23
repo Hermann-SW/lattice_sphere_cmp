@@ -10,4 +10,8 @@ https://Hermann-sw.github.io/lattice_sphere_cmp
 Related question:  
 https://math.stackexchange.com/questions/4917740/which-faces-does-sphere-lattice-polyhedron-operatornamehullp-in-mathbbz
 
+Analysis output added (#faces/#edges/#vertices) in 3rd last logged line.  
+In case of cmp="= pq" output of [r3](https://en.wikipedia.org/wiki/Sum_of_squares_function#k_=_3)(pq) as well (should be same as #vertices).  
+![res/analysis_r3.png](res/analysis_r3.png)
+
 ![res/frames+edges+vertices.png](res/frames+edges+vertices.png)
