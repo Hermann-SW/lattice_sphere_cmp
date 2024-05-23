@@ -5,10 +5,19 @@ const { star } = jscad.primitives
 const { hull } = jscad.hulls
 const { geom3 } = jscad.geometries
 const { colorize } = jscad.colors
-const { cylinder } = jscad.primitives
+const { cuboid, sphere, cylinder } = jscad.primitives
 const { rotate, translate } = jscad.transforms
 const { add, length, subtract, scale } = jscad.maths.vec3
 const { union } = jscad.booleans
+
+function hullFromPoints3(listofpoints) {
+  return hull([geom3.create(),
+    geom3.fromPoints(listofpoints.map((p) => [p,p,p]))])
+}
+
+segments = 6
+reusedsphere = sphere({radius:0.075, segments: segments})
+function fastvertex(c) { return(translate(c, reusedsphere)) }
 
 function edge(_v, _w) {
     d = [0, 0, 0]
@@ -16,18 +25,11 @@ function edge(_v, _w) {
     subtract(d, _w, _v)
     add(w, _v, _w)
     scale(w, w, 0.5)
-    return colorize([0.8, 0.8, 0.8, 1],
-        translate(w,
-            rotate([0, Math.acos(d[2]/length(d)), Math.atan2(d[1], d[0])],
-                cylinder({radius: 0.1, height: length(d), segments: 4})
-            )
-        )
-    )
-}
-
-function hullFromPoints3(listofpoints) {
-  return hull([geom3.create(),
-    geom3.fromPoints(listofpoints.map((p) => [p,p,p]))])
+    return translate(w,
+             rotate([0, Math.acos(d[2]/length(d)), Math.atan2(d[1], d[0])],
+               cylinder({radius: 0.05, height: length(d), segments: segments})
+             )
+           )
 }
 
 function main(params) {
@@ -61,14 +63,28 @@ function main(params) {
       done=true
     }
   })
-  edges = []
-  h.polygons.forEach((p)=>{
-    vs = p.vertices
-    for(i=0;i<vs.length;i++)
-      edges.push(edge(vs[i], vs[(i+1)%vs.length]))
-  })
 
-  h = union(h, edges)
+  if(params.display!=="faces"){
+    edges = []
+    vertices = []
+    R = m+1
+    h.polygons.forEach((p)=>{
+      vs = p.vertices
+      for(i=0;i<vs.length;i++){
+        edges.push(edge(vs[i], vs[(i+1)%vs.length]))
+        w = [0, 0, 0]
+        add(w, vs[i], vs[(i+1)%vs.length])
+        scale(w, w, 0.5)
+        if(length(w)<R)  R=length(w)
+        vertices.push(fastvertex(vs[i]))
+      }
+    })
+    if (params.display==="sphere+edges+vertices (slowest)"){
+      return union(sphere({radius: R-0.1}), edges, vertices)
+    }
+    return params.display==="edges+vertices (slow)" ? union(edges, vertices) : union(h, edges, vertices)
+  }
+
   return h
 }
 
@@ -78,8 +94,8 @@ function getParameterDefinitions() {
     { name: 'cmp', type: 'choice', values: ['≤ n', '= n', "= pq"], initial: '≤ n', caption: 'x²+y²+z²' },
     { name: 'p', type: 'choice', values: [5, 13, 17, 29, 37, 41, 53, 61, 73, 89, 97], initial: 13, caption: 'p' },
     { name: 'q', type: 'choice', values: [5, 13, 17, 29, 37, 41, 53, 61, 73, 89, 97], initial: 17, caption: 'q' },
+    { name: 'display', type: 'choice', values: ['faces', 'edges+vertices (slow)', 'faces+edges+vertices (slower)', 'sphere+edges+vertices (slowest)'], initial: 'faces', caption: 'display' },
   ]
 }
 
 module.exports = { main, getParameterDefinitions }
-
