@@ -32,6 +32,22 @@ function edge(_v, _w) {
            )
 }
 
+// https://en.wikipedia.org/wiki/Sum_of_squares_function#k_=_3
+// computed with PARI/GP: 12*qfbclassno(-4*p*q)
+const r3 = ((p,q) => R3[P1.indexOf(p)][P1.indexOf(q)])
+P1=[5, 13, 17, 29, 37, 41, 53, 61, 73, 89, 97]
+R3=[[0,96,48,96,192,96,96,192,240,96,240],
+[96,0,192,192,192,144,480,96,144,336,240],
+[48,192,0,144,432,96,288,240,384,192,576],
+[96,192,144,0,288,240,192,768,432,432,720],
+[192,192,432,288,0,576,384,288,576,528,528],
+[96,144,96,240,576,0,240,672,576,480,672],
+[96,480,288,192,384,240,0,672,1104,288,864],
+[192,96,240,768,288,672,672,0,288,912,384],
+[240,144,384,432,576,576,1104,288,0,768,768],
+[96,336,192,432,528,480,288,912,768,0,768],
+[240,240,576,720,528,672,864,384,768,768,0]]
+
 function main(params) {
   if(params.cmp==="= n"){j=params.n;while(j%4==0)j>>=2;if(j%8==7)return(star())}
   n = (params.cmp==="= pq") ? params.p*params.q : params.n
@@ -63,6 +79,16 @@ function main(params) {
       done=true
     }
   })
+
+  nfaces = h.polygons.length
+  nedges = 0
+  h.polygons.forEach((p) => nedges += p.vertices.length)
+  nedges /= 2
+  nvertices = nedges + 2 - nfaces
+  console.log("#faces="+nfaces+" #edges="+nedges+" #vertices="+nvertices)
+  if(params.cmp==="= pq")
+    if(r3(params.p,params.q)!=0)
+      console.log("r3(pq)=",r3(params.p,params.q))
 
   if(params.display!=="faces"){
     edges = []
