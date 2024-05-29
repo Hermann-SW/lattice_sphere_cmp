@@ -32,7 +32,9 @@ function edge(_v, _w, r = 0.05, segs = segments) {
            )
 }
 
-const line3 = ((_v, _w) => edge(_v, _w, 0.015, segments));
+let nsqrt = 0
+
+const line3 = ((_v, _w) => edge(_v, _w, 0.004*nsqrt, segments));
 
 const centroid = ((ps) => { ret=[0,0,0]
   ps.forEach((p) => add(ret, ret, p))
@@ -58,6 +60,7 @@ R3=[[0,96,48,96,192,96,96,192,240,96,240],
 function main(params) {
   if(params.cmp==="= n"){j=params.n;while(j%4==0)j>>=2;if(j%8==7)return(star())}
   n = (params.cmp==="= pq") ? params.p*params.q : params.n
+  nsqrt = Math.sqrt(n)
   m = Math.floor(Math.sqrt(n))
   cmp = params.cmp==="≤ n" ? ((x,y) => x<=y) : ((x,y) => x==y)
   out = []
