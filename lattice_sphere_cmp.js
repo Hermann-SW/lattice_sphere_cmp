@@ -16,7 +16,7 @@ function hullFromPoints3(listofpoints) {
 }
 
 segments = 6
-reusedsphere = sphere({radius:0.075, segments: segments})
+let reusedsphere = undefined
 function fastvertex(c) { return(translate(c, reusedsphere)) }
 
 function edge(_v, _w, r = 0.05, segs = segments) {
@@ -61,6 +61,7 @@ function main(params) {
   if(params.cmp==="= n"){j=params.n;while(j%4==0)j>>=2;if(j%8==7)return(star())}
   n = (params.cmp==="= pq") ? params.p*params.q : params.n
   nsqrt = Math.sqrt(n)
+  reusedsphere = sphere({radius:0.007*nsqrt, segments: segments})
   m = Math.floor(Math.sqrt(n))
   cmp = params.cmp==="≤ n" ? ((x,y) => x<=y) : ((x,y) => x==y)
   out = []
