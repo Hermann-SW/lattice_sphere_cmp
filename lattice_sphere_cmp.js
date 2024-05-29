@@ -7,8 +7,8 @@ const { geom3 } = jscad.geometries
 const { colorize } = jscad.colors
 const { cuboid, sphere, cylinder } = jscad.primitives
 const { rotate, translate } = jscad.transforms
-const { add, length, subtract, scale } = jscad.maths.vec3
-const { union } = jscad.booleans
+const { angle, add, length, subtract, scale, dot } = jscad.maths.vec3
+const { fromPoints } = jscad.maths.plane
 
 function hullFromPoints3(listofpoints) {
   return hull([geom3.create(),
@@ -19,7 +19,7 @@ segments = 6
 reusedsphere = sphere({radius:0.075, segments: segments})
 function fastvertex(c) { return(translate(c, reusedsphere)) }
 
-function edge(_v, _w) {
+function edge(_v, _w, r = 0.05, segs = segments) {
     d = [0, 0, 0]
     w = [0, 0, 0]
     subtract(d, _w, _v)
@@ -27,10 +27,17 @@ function edge(_v, _w) {
     scale(w, w, 0.5)
     return translate(w,
              rotate([0, Math.acos(d[2]/length(d)), Math.atan2(d[1], d[0])],
-               cylinder({radius: 0.05, height: length(d), segments: segments})
+               cylinder({radius: r, height: length(d), segments: segs})
              )
            )
 }
+
+const line3 = ((_v, _w) => edge(_v, _w, 0.015, segments));
+
+const centroid = ((ps) => { ret=[0,0,0]
+  ps.forEach((p) => add(ret, ret, p))
+  return  scale(ret, ret, 1.0/ps.length)
+})
 
 // https://en.wikipedia.org/wiki/Sum_of_squares_function#k_=_3
 // computed with PARI/GP: 12*qfbclassno(-4*p*q)
@@ -93,6 +100,8 @@ function main(params) {
   if(params.display!=="faces"){
     edges = []
     vertices = []
+    normals = []
+    angles = []
     R = m+1
     h.polygons.forEach((p)=>{
       vs = p.vertices
@@ -104,11 +113,29 @@ function main(params) {
         if(length(w)<R)  R=length(w)
         vertices.push(fastvertex(vs[i]))
       }
+
+      fplane = []
+      aux = []
+      aux2 = []
+      fromPoints(fplane, ...vs)
+      cent = centroid(vs)
+      if(0!==angle(cent,fplane)) {
+        if (params.display!=="faces+normals") {
+          console.log(cent,fplane)
+          console.log(scale(aux,fplane,fplane[3]))
+          console.log(angle(cent,fplane))
+        }
+        angles.push(colorize([1,1,1],fastvertex(cent)))
+      }
+      normals.push(colorize([1,1,1],line3(scale(aux,fplane,fplane[3]), scale(aux2,fplane,1+fplane[3]))))
     })
-    if (params.display==="sphere+edges+vertices (slowest)"){
-      return union(sphere({radius: R-0.1}), edges, vertices)
+    if (params.display.startsWith("faces+normals")){
+      return params.display==="faces+normals" ? [h, normals] : [h, normals, angles]
     }
-    return params.display==="edges+vertices (slow)" ? union(edges, vertices) : union(h, edges, vertices)
+    if (params.display==="sphere+edges+vertices (slowest)"){
+      return [sphere({radius: R-0.1}), edges, vertices]
+    }
+    return params.display==="edges+vertices (slow)" ? [edges, vertices] : [h, edges, vertices]
   }
 
   return h
@@ -120,7 +147,7 @@ function getParameterDefinitions() {
     { name: 'cmp', type: 'choice', values: ['≤ n', '= n', "= pq"], initial: '≤ n', caption: 'x²+y²+z²' },
     { name: 'p', type: 'choice', values: [5, 13, 17, 29, 37, 41, 53, 61, 73, 89, 97], initial: 13, caption: 'p' },
     { name: 'q', type: 'choice', values: [5, 13, 17, 29, 37, 41, 53, 61, 73, 89, 97], initial: 17, caption: 'q' },
-    { name: 'display', type: 'choice', values: ['faces', 'edges+vertices (slow)', 'faces+edges+vertices (slower)', 'sphere+edges+vertices (slowest)'], initial: 'faces', caption: 'display' },
+    { name: 'display', type: 'choice', values: ['faces', 'faces+normals', 'faces+normals(+centroids)', 'edges+vertices (slow)', 'faces+edges+vertices (slower)', 'sphere+edges+vertices (slowest)'], initial: 'faces', caption: 'display' },
   ]
 }
 
