@@ -6,7 +6,7 @@ const { hull } = jscad.hulls
 const { geom3 } = jscad.geometries
 const { colorize } = jscad.colors
 const { cuboid, sphere, cylinder } = jscad.primitives
-const { rotate, translate } = jscad.transforms
+const { rotate, translate, scale:scale3d } = jscad.transforms
 const { angle, add, length, subtract, scale, dot } = jscad.maths.vec3
 const { fromPoints } = jscad.maths.plane
 
@@ -16,6 +16,7 @@ function hullFromPoints3(listofpoints) {
 }
 
 segments = 6
+const oneCylinder = cylinder({radius: 1, height: 1, segments: segments})
 let reusedsphere = undefined
 function fastvertex(c) { return(translate(c, reusedsphere)) }
 
@@ -27,7 +28,7 @@ function edge(_v, _w, r = 0.05, segs = segments) {
     scale(w, w, 0.5)
     return translate(w,
              rotate([0, Math.acos(d[2]/length(d)), Math.atan2(d[1], d[0])],
-               cylinder({radius: r, height: length(d), segments: segs})
+               scale3d([r,r,length(d)],oneCylinder)
              )
            )
 }
