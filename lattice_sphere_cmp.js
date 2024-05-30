@@ -124,7 +124,7 @@ function main(params) {
       fromPoints(fplane, ...vs)
       cent = centroid(vs)
       if(0!==angle(cent,fplane)) {
-        if (params.display!=="faces+normals") {
+        if (params.display.startsWith("faces+normals(")) {
           console.log(cent,fplane)
           console.log(scale(aux,fplane,fplane[3]))
           console.log(angle(cent,fplane))
