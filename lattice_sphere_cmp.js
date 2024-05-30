@@ -132,7 +132,7 @@ function main(params) {
         }
         angles.push(colorize([1,1,1],fastvertex(cent)))
       }
-      normals.push(colorize([1,1,1],line3(scale(aux,fplane,fplane[3]), scale(aux2,fplane,1+fplane[3]))))
+      normals.push(colorize([1,1,1],line3(cent, add(aux2,cent,fplane))))
     })
     if (params.display.startsWith("faces+normals")){
       return params.display==="faces+normals" ? [h, normals] : [h, normals, angles]
