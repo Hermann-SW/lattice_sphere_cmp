@@ -8,6 +8,7 @@ const { colorize } = jscad.colors
 const { cuboid, sphere, cylinder } = jscad.primitives
 const { rotate, translate, scale:scale3d } = jscad.transforms
 const { angle, add, length, subtract, scale, dot } = jscad.maths.vec3
+const { vec3 } = jscad.maths
 const { fromPoints } = jscad.maths.plane
 
 function hullFromPoints3(listofpoints) {
@@ -107,6 +108,7 @@ function main(params) {
     vertices = []
     normals = []
     angles = []
+    outside = []
     R = m+1
     h.polygons.forEach((p)=>{
       vs = p.vertices
@@ -131,6 +133,12 @@ function main(params) {
           console.log(angle(cent,fplane))
         }
         angles.push(colorize([1,1,1],fastvertex(cent)))
+        outside.push(line3(scale(vec3.create(),fplane,fplane[3]),cent))
+        if(vs.length<4) { // make sure "vs.length >= 4"
+          outside.push(hullFromPoints3([...vs,centroid(vs)]))
+        } else {
+          outside.push(hullFromPoints3(vs))
+        }
       }
       normals.push(colorize([1,1,1],line3(cent, add(aux2,cent,fplane))))
     })
@@ -139,6 +147,9 @@ function main(params) {
     }
     if (params.display==="sphere+edges+vertices (slowest)"){
       return [sphere({radius: R-0.1}), edges, vertices]
+    }
+    if (params.display==="centroid!=normal +face"){
+      return [outside, edges]
     }
     return params.display==="edges+vertices (slow)" ? [edges, vertices] : [h, edges, vertices]
   }
@@ -152,7 +163,7 @@ function getParameterDefinitions() {
     { name: 'cmp', type: 'choice', values: ['≤ n', '= n', "= pq"], initial: '≤ n', caption: 'x²+y²+z²' },
     { name: 'p', type: 'choice', values: [5, 13, 17, 29, 37, 41, 53, 61, 73, 89, 97], initial: 13, caption: 'p' },
     { name: 'q', type: 'choice', values: [5, 13, 17, 29, 37, 41, 53, 61, 73, 89, 97], initial: 17, caption: 'q' },
-    { name: 'display', type: 'choice', values: ['faces', 'faces+normals', 'faces+normals(+centroids)', 'edges+vertices (slow)', 'faces+edges+vertices (slower)', 'sphere+edges+vertices (slowest)'], initial: 'faces', caption: 'display' },
+    { name: 'display', type: 'choice', values: ['faces', 'faces+normals', 'faces+normals(+centroids)', 'centroid!=normal +face', 'edges+vertices (slow)', 'faces+edges+vertices (slower)', 'sphere+edges+vertices (slowest)'], initial: 'faces', caption: 'display' },
   ]
 }
 
