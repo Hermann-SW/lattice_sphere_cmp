@@ -11,11 +11,6 @@ const { angle, add, length, subtract, scale, dot } = jscad.maths.vec3
 const { vec3 } = jscad.maths
 const { fromPoints } = jscad.maths.plane
 
-function hullFromPoints3(listofpoints) {
-  return hull([geom3.create(),
-    geom3.fromPoints(listofpoints.map((p) => [p,p,p]))])
-}
-
 segments = 6
 const oneCylinder = cylinder({radius: 1, height: 1, segments: segments})
 let reusedsphere = undefined
@@ -72,7 +67,7 @@ function main(params) {
       for(z=-m;z<=m;++z)
         if (cmp(x*x+y*y+z*z,n))
           out.push([x,y,z])
-  h = hullFromPoints3(out) 
+  h = geom3.fromPointsConvex(out) 
   cnt=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
   bad=false
   h.polygons.forEach((p)=>{
@@ -135,9 +130,9 @@ function main(params) {
         angles.push(colorize([1,1,1],fastvertex(cent)))
         outside.push(line3(scale(vec3.create(),fplane,fplane[3]),cent))
         if(vs.length<4) { // make sure "vs.length >= 4"
-          outside.push(hullFromPoints3([...vs,centroid(vs)]))
+          outside.push(geom3.fromPointsConvex([...vs,centroid(vs)]))
         } else {
-          outside.push(hullFromPoints3(vs))
+          outside.push(geom3.fromPointsConvex(vs))
         }
       }
       normals.push(colorize([1,1,1],line3(cent, add(aux2,cent,fplane))))
