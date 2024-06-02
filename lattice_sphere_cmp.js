@@ -129,11 +129,9 @@ function main(params) {
         }
         angles.push(colorize([1,1,1],fastvertex(cent)))
         outside.push(line3(scale(vec3.create(),fplane,fplane[3]),cent))
-        if(vs.length<4) { // make sure "vs.length >= 4"
-          outside.push(geom3.fromPointsConvex([...vs,centroid(vs)]))
-        } else {
-          outside.push(geom3.fromPointsConvex(vs))
-        }
+        // workaround for issue #1347, draws complete face
+        pts = [...vs,subtract(vec3.create(),centroid(vs),scale(vec3.create(),fplane,1e-3))]
+        outside.push(geom3.fromPointsConvex(pts))
       }
       normals.push(colorize([1,1,1],line3(cent, add(aux2,cent,fplane))))
     })
