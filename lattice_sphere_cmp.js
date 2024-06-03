@@ -5,11 +5,68 @@ const { star } = jscad.primitives
 const { hull } = jscad.hulls
 const { geom3 } = jscad.geometries
 const { colorize } = jscad.colors
-const { cuboid, sphere, cylinder } = jscad.primitives
-const { rotate, translate, scale:scale3d } = jscad.transforms
+const { cuboid, sphere, cylinder, circle } = jscad.primitives
+const { rotate, translate, translateX, scale:scale3d } = jscad.transforms
 const { angle, add, length, subtract, scale, dot } = jscad.maths.vec3
 const { vec3 } = jscad.maths
 const { fromPoints } = jscad.maths.plane
+
+const { vectorText } = jscad.text
+const { union } = jscad.booleans
+const { extrudeLinear } = jscad.extrusions
+const { measureBoundingBox } = jscad.measurements
+const { hullChain } = jscad.hulls
+
+function txt(mesg, w) {
+    const lineRadius = w / 8 // 2
+    const lineCorner = circle({ radius: lineRadius })
+
+    const lineSegmentPointArrays = vectorText({ x: 0, y: 0, height: 0.125, input: mesg })
+
+    const lineSegments = []
+    lineSegmentPointArrays.forEach(function(segmentPoints) {
+        const corners = segmentPoints.map((point) => translate(point, lineCorner))
+        lineSegments.push(hullChain(corners))
+    })
+    const message2D = union(lineSegments)
+    ret = extrudeLinear({ height: w }, message2D)
+    return ret
+}
+
+let map = new Map()
+
+function txt2(mesg, w) {
+    let xofs = 0
+    let ret = []
+    for(i in mesg){
+      if(map.get(mesg[i])===undefined) { 
+        map.set(mesg[i], txt(mesg[i], w))
+      }
+      ret.push(translateX(xofs, map.get(mesg[i])))
+      xofs += measureBoundingBox(map.get(mesg[i]))[1][0]
+    }
+    return ret
+}
+
+function vtxt(p1, num) {
+    str = num.toString()
+    la1 = Math.atan2(p1[1], p1[0])    
+    ph1 = Math.PI/2-Math.acos(p1[2]/vec3.length(p1))
+    lab = txt2(str, 0.05)
+    return translate([0, 0, 0],
+        rotate([0, 0, la1],
+            rotate([0, -ph1, 0],
+                translate([vec3.length(p1)+0.1, -measureBoundingBox(lab[lab.length-1])[1][0]/2],
+                    rotate([Math.PI/2, 0, Math.PI/2],
+                        colorize([1, 1, 1],
+                            lab
+                        )
+                    )
+                )
+            )
+        )
+    )
+}
 
 segments = 6
 const oneCylinder = cylinder({radius: 1, height: 1, segments: segments})
@@ -129,6 +186,7 @@ function main(params) {
         }
         angles.push(colorize([1,1,1],fastvertex(cent)))
         outside.push(line3(scale(vec3.create(),fplane,fplane[3]),cent))
+        vs.forEach((v)=>outside.push(vtxt(v,JSON.stringify(v))))
         // workaround for issue #1347, draws complete face
         pts = [...vs,subtract(vec3.create(),centroid(vs),scale(vec3.create(),fplane,1e-3))]
         outside.push(geom3.fromPointsConvex(pts))
