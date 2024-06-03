@@ -186,6 +186,7 @@ function main(params) {
         }
         angles.push(colorize([1,1,1],fastvertex(cent)))
         outside.push(line3(scale(vec3.create(),fplane,fplane[3]),cent))
+        if(params.text===true)
         vs.forEach((v)=>outside.push(vtxt(v,JSON.stringify(v))))
         // workaround for issue #1347, draws complete face
         pts = [...vs,subtract(vec3.create(),centroid(vs),scale(vec3.create(),fplane,1e-3))]
@@ -215,6 +216,7 @@ function getParameterDefinitions() {
     { name: 'p', type: 'choice', values: [5, 13, 17, 29, 37, 41, 53, 61, 73, 89, 97], initial: 13, caption: 'p' },
     { name: 'q', type: 'choice', values: [5, 13, 17, 29, 37, 41, 53, 61, 73, 89, 97], initial: 17, caption: 'q' },
     { name: 'display', type: 'choice', values: ['faces', 'faces+normals', 'faces+normals(+centroids)', 'centroid!=normal +face', 'edges+vertices (slow)', 'faces+edges+vertices (slower)', 'sphere+edges+vertices (slowest)'], initial: 'faces', caption: 'display' },
+    { name: 'text', type: 'checkbox', checked: false, caption: 'text:' },
   ]
 }
 
