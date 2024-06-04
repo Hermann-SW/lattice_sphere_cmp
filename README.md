@@ -17,3 +17,5 @@ In case of cmp="= pq" output of [r3](https://en.wikipedia.org/wiki/Sum_of_square
 ![res/frames+edges+vertices.png](res/frames+edges+vertices.png)
 
 ![res/Peek_2024-05-29_21-50.gif](res/Peek_2024-05-29_21-50.gif)
+
+![res/new_text.png](res/new_text.png)
