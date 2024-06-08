@@ -8,7 +8,7 @@ const { colorize } = jscad.colors
 const { cuboid, sphere, cylinder, circle } = jscad.primitives
 const { rotate, translate, translateX, scale:scale3d } = jscad.transforms
 const { angle, add, length, subtract, scale, dot } = jscad.maths.vec3
-const { vec3 } = jscad.maths
+const { vec3, plane } = jscad.maths
 const { fromPoints } = jscad.maths.plane
 
 const { vectorText } = jscad.text
@@ -94,6 +94,29 @@ const centroid = ((ps) => { ret=[0,0,0]
   ps.forEach((p) => add(ret, ret, p))
   return  scale(ret, ret, 1.0/ps.length)
 })
+
+const isPointOnPlane = (pla, pt, tol=1e-10) =>
+  Math.abs(vec3.dot(pt, pla) - pla[3]) < tol
+
+const arePointsOnPlane = (pla, pts, tol=1e-10) =>
+  pts.every((p) => isPointOnPlane(pla, p, tol))
+
+// issue #1347 workaround: works for all points in same plane as well
+function fromPointsConvex(pts) {
+  pla = plane.fromPoints(vec3.create(), ...pts)
+
+  if (!arePointsOnPlane(pla, pts)) {
+    console.log("foobar")
+    return geom3.fromPointsConvex(pts)
+  }
+
+  np = vec3.subtract(vec3.create(),
+                     pts[0],
+                     vec3.scale(vec3.create(), pla, 1e-3)
+                    )
+
+  return geom3.fromPointsConvex([np, ...pts])
+}
 
 // https://en.wikipedia.org/wiki/Sum_of_squares_function#k_=_3
 // computed with PARI/GP: 12*qfbclassno(-4*p*q)
@@ -189,8 +212,7 @@ function main(params) {
         if(params.text===true)
         vs.forEach((v)=>outside.push(vtxt(v,JSON.stringify(v))))
         // workaround for issue #1347, draws complete face
-        pts = [...vs,subtract(vec3.create(),centroid(vs),scale(vec3.create(),fplane,1e-3))]
-        outside.push(geom3.fromPointsConvex(pts))
+        outside.push(fromPointsConvex(vs))
       }
       normals.push(colorize([1,1,1],line3(cent, add(aux2,cent,fplane))))
     })
