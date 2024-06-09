@@ -3,7 +3,7 @@
 const jscad = require('@jscad/modeling')
 const { star } = jscad.primitives
 const { hull } = jscad.hulls
-const { geom3 } = jscad.geometries
+const { geom3, poly3 } = jscad.geometries
 const { colorize } = jscad.colors
 const { cuboid, sphere, cylinder, circle } = jscad.primitives
 const { rotate, translate, translateX, scale:scale3d } = jscad.transforms
@@ -103,7 +103,7 @@ const arePointsOnPlane = (pla, pts, tol=1e-10) =>
 
 // issue #1347 workaround: works for all points in same plane as well
 function fromPointsConvex(pts) {
-  pla = plane.fromPoints(vec3.create(), ...pts)
+  pla = plane.fromPoints(plane.create(), ...pts)
 
   if (!arePointsOnPlane(pla, pts)) {
     console.log("foobar")
@@ -115,7 +115,14 @@ function fromPointsConvex(pts) {
                      vec3.scale(vec3.create(), pla, 1e-3)
                     )
 
-  return geom3.fromPointsConvex([np, ...pts])
+  g = geom3.fromPointsConvex([np, ...pts])
+
+  p3 = g.polygons.reduce((a,p) =>
+    (p!==undefined&&!p.vertices.some((v)=>vec3.equals(v,np)))?a=p:a,{})
+
+  g.polygons = [p3, poly3.invert(p3)]
+
+  return g
 }
 
 // https://en.wikipedia.org/wiki/Sum_of_squares_function#k_=_3
