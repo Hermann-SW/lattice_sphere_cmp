@@ -125,6 +125,44 @@ function fromPointsConvex(pts) {
   return g
 }
 
+const assert = (b) => {if(!b){throw("assert")}}
+
+function fromPointsConvexPlaneℤ3(pts) {
+  allℤ = pts.every((p) => p.every((e) => Number.isInteger(e)))
+  console.assert(allℤ); assert(allℤ)
+
+  s01 = vec3.subtract(vec3.create(), pts[1], pts[0])
+  s02 = pts.reduce((a,p) =>
+    (p!=undefined && (
+      s = vec3.subtract(vec3.create(), p, pts[0]),
+      !vec3.equals([0,0,0], vec3.cross(vec3.create(), s01, s)))
+    )
+    ? a=s : a,
+    {}
+  )
+
+  nor = vec3.cross(vec3.create(), s01, s02)
+  console.assert(b = !vec3.equals([0,0,0], nor)); assert(b)
+
+  d = vec3.dot(pts[0], nor)
+  samePlane = pts.every((p) => (d == vec3.dot(p, nor)))
+  console.assert(samePlane); assert(samePlane)
+
+  np = vec3.subtract(vec3.create(), pts[0], nor)
+
+  g = geom3.fromPointsConvex([np, ...pts])
+
+  p3 = g.polygons.reduce((a,p) =>
+    (p !== undefined && !p.vertices.some((v) => vec3.equals(v, np)))
+    ? a=p : a,
+    {}
+  )
+
+  g.polygons = [p3, poly3.invert(p3)]
+
+  return g
+}
+
 // https://en.wikipedia.org/wiki/Sum_of_squares_function#k_=_3
 // computed with PARI/GP: 12*qfbclassno(-4*p*q)
 const r3 = ((p,q) => R3[P1.indexOf(p)][P1.indexOf(q)])
@@ -218,8 +256,8 @@ function main(params) {
         outside.push(line3(scale(vec3.create(),fplane,fplane[3]),cent))
         if(params.text===true)
         vs.forEach((v)=>outside.push(vtxt(v,JSON.stringify(v))))
-        // workaround for issue #1347, draws complete face
-        outside.push(fromPointsConvex(vs))
+
+        outside.push(fromPointsConvexPlaneℤ3(vs))
       }
       normals.push(colorize([1,1,1],line3(cent, add(aux2,cent,fplane))))
     })
