@@ -128,18 +128,23 @@ function fromPointsConvex(pts) {
 const assert = (b) => {if(!b){throw("assert")}}
 
 function fromPointsConvexPlaneℤ3(pts) {
+  console.assert(pts.length > 2); assert(pts.length > 2)
+
   allℤ = pts.every((p) => p.every((e) => Number.isInteger(e)))
   console.assert(allℤ); assert(allℤ)
 
-  s01 = vec3.subtract(vec3.create(), pts[1], pts[0])
+  p1 = pts.reduce((a,p) => vec3.equals(p, pts[0]) ? a : a=p, undefined)
+  console.assert(p1 != undefined); assert(p1 != undefined)
+
+  s01 = vec3.subtract(vec3.create(), p1, pts[0])
   s02 = pts.reduce((a,p) =>
-    (p!=undefined && (
-      s = vec3.subtract(vec3.create(), p, pts[0]),
-      !vec3.equals([0,0,0], vec3.cross(vec3.create(), s01, s)))
+    (s = vec3.subtract(vec3.create(), p, pts[0]),
+     vec3.equals([0,0,0], vec3.cross(vec3.create(), s01, s))
     )
-    ? a=s : a,
-    {}
+    ? a : a=s,
+    undefined
   )
+  console.assert(s02 != undefined); assert(s02 != undefined)
 
   nor = vec3.cross(vec3.create(), s01, s02)
   console.assert(b = !vec3.equals([0,0,0], nor)); assert(b)
@@ -148,15 +153,15 @@ function fromPointsConvexPlaneℤ3(pts) {
   samePlane = pts.every((p) => (d == vec3.dot(p, nor)))
   console.assert(samePlane); assert(samePlane)
 
-  np = vec3.subtract(vec3.create(), pts[0], nor)
+  np = vec3.add(vec3.create(), pts[0], nor)
 
   g = geom3.fromPointsConvex([np, ...pts])
 
   p3 = g.polygons.reduce((a,p) =>
-    (p !== undefined && !p.vertices.some((v) => vec3.equals(v, np)))
-    ? a=p : a,
-    {}
+    p.vertices.some((v) => vec3.equals(v, np)) ? a : a=p,
+    undefined
   )
+  console.assert(p3 != undefined); assert(p3 != undefined)
 
   g.polygons = [p3, poly3.invert(p3)]
 
