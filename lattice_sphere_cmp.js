@@ -90,10 +90,11 @@ let nsqrt = 0
 
 const line3 = ((_v, _w) => edge(_v, _w, 0.004*nsqrt, segments));
 
-const centroid = ((ps) => { ret=[0,0,0]
-  ps.forEach((p) => add(ret, ret, p))
-  return  scale(ret, ret, 1.0/ps.length)
-})
+const centroid = ((pts) =>
+  vec3.scale(
+    vec3.create(), pts.reduce((a, p) => add(a, a, p), [0,0,0]), 1.0/pts.length
+  )
+)
 
 const isPointOnPlane = (pla, pt, tol=1e-10) =>
   Math.abs(vec3.dot(pt, pla) - pla[3]) < tol
@@ -147,7 +148,6 @@ function fromPointsConvexPlaneℤ3(pts) {
   console.assert(s02 != undefined); assert(s02 != undefined)
 
   nor = vec3.cross(vec3.create(), s01, s02)
-  console.assert(b = !vec3.equals([0,0,0], nor)); assert(b)
 
   d = vec3.dot(pts[0], nor)
   samePlane = pts.every((p) => (d == vec3.dot(p, nor)))

@@ -1,0 +1,10 @@
+#!/bin/bash
+browser=firefox
+browser=chromium-browser
+
+if [ "$(gzip -c "$1" | base64 -w 0 | wc --bytes)" -gt 32000 ]
+then
+  echo "gzipped base64 string too long"
+else
+  $browser "jscad.app/#data:application/gzip;base64,$(gzip -c "$1" | base64 -w 0)"
+fi
