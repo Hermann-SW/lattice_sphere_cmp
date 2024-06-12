@@ -267,6 +267,9 @@ function main(params) {
       }
       normals.push(colorize([1,1,1],line3(cent, add(aux2,cent,fplane))))
     })
+
+    h.polygons = h.polygons.reduce((a,p) => a=[...a, p, poly3.invert(p)], [])
+  
     if (params.display.startsWith("faces+normals")){
       return params.display==="faces+normals" ? [h, normals] : [h, normals, angles]
     }
@@ -278,6 +281,8 @@ function main(params) {
     }
     return params.display==="edges+vertices (slow)" ? [edges, vertices] : [h, edges, vertices]
   }
+
+  h.polygons = h.polygons.reduce((a,p) => a=[...a, p, poly3.invert(p)], [])
 
   return h
 }
