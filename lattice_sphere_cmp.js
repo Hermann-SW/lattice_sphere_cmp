@@ -107,7 +107,6 @@ function fromPointsConvex(pts) {
   pla = plane.fromPoints(plane.create(), ...pts)
 
   if (!arePointsOnPlane(pla, pts)) {
-    console.log("foobar")
     return geom3.fromPointsConvex(pts)
   }
 
@@ -202,12 +201,12 @@ function main(params) {
   bad=false
   h.polygons.forEach((p)=>{
     l=p.vertices.length;
-    if(l<3 || l==11 || (l>12 && l!=18)) {bad=true;console.log("bad "+l)} else {cnt[l]++}
+    console.assert(b = !(l<3 || l==11 || (l>12 && l!=18))); assert(b)
+    cnt[l]++
   })
   for(i=3;i<=18;++i){
     if((i<=10||i==12||i==18)&&cnt[i]>0) {console.log(i+"-gons: "+cnt[i])}
   }
-  console.log(bad?"bad!!!":"ok")
   for(i=18;;--i) if(cnt[i]>0) break;
   
   done=false
@@ -224,9 +223,11 @@ function main(params) {
   nedges /= 2
   nvertices = nedges + 2 - nfaces
   console.log("#faces="+nfaces+" #edges="+nedges+" #vertices="+nvertices)
-  if(params.cmp==="= pq")
+  if(params.cmp==="= pq") {
     if(r3(params.p,params.q)!=0)
       console.log("r3(pq)=",r3(params.p,params.q))
+    console.assert(b = (nvertices == r3(params.p,params.q))); assert(b)
+  }
 
   if(params.display!=="faces"){
     edges = []
