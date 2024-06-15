@@ -1,3 +1,5 @@
+// https://hermann-sw.github.io/lattice_sphere_cmp/
+// https://github.com/Hermann-sw/lattice_sphere_cmp
 // https://math.stackexchange.com/questions/4917740/which-faces-does-sphere-lattice-polyhedron-operatornamehullp-in-mathbbz
 //
 const jscad = require('@jscad/modeling')
