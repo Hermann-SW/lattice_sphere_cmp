@@ -24,6 +24,10 @@ const rep = (A,b,i) => (C=[A[0].slice(),A[1].slice(),A[2].slice()],
                         C[0][i]=b[0],C[1][i]=b[1],C[2][i]=b[2], C)
 const solve = (A,b) =>
   (d=det(A), [det(rep(A,b,0))/d, det(rep(A,b,1))/d, det(rep(A,b,2))/d])
+const gcd = (a,b) => b ? gcd(b, a % b) : Math.abs(a)
+const frac = (i,d) => (g=gcd(i,d),(d==g)?i/g:[i/g,d/g])
+const solver = (A,b) => (d=det(A),
+  [frac(det(rep(A,b,0)),d), frac(det(rep(A,b,1)),d), frac(det(rep(A,b,2)),d)])
 
 function txt(mesg, w) {
     const lineRadius = w / 8 // 2
@@ -289,10 +293,20 @@ function main(params) {
             prev = p
           })
           S.push(val)
+
+          if(params.text===true)
+            outside.push(vtxt(val,JSON.stringify(solver([vs[0],vs[1],vs[2]],[n,n,n]))))
         }
       )
 
       s = colorize([0.5,0.5,0.5,0.8], geom3.fromPointsConvex(S))
+
+      nfaces = s.polygons.length
+      nedges = 0
+      s.polygons.forEach((p) => nedges += p.vertices.length)
+      nedges /= 2
+      nvertices = nedges + 2 - nfaces
+      console.log("dual: #faces="+nfaces+" #edges="+nedges+" #vertices="+nvertices)
 
       return [outside, edges, s]
     }
