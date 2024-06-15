@@ -19,6 +19,12 @@ const { extrudeLinear } = jscad.extrusions
 const { measureBoundingBox } = jscad.measurements
 const { hullChain } = jscad.hulls
 
+const det = ([[a,b,c],[d,e,f],[g,h,i]]) => a*(e*i-f*h)-b*(d*i-f*g)+c*(d*h-e*g)
+const rep = (A,b,i) => (C=[A[0].slice(),A[1].slice(),A[2].slice()],
+                        C[0][i]=b[0],C[1][i]=b[1],C[2][i]=b[2], C)
+const solve = (A,b) =>
+  (d=det(A), [det(rep(A,b,0))/d, det(rep(A,b,1))/d, det(rep(A,b,2))/d])
+
 function txt(mesg, w) {
     const lineRadius = w / 8 // 2
     const lineCorner = circle({ radius: lineRadius })
@@ -270,6 +276,27 @@ function main(params) {
       normals.push(colorize([1,1,1],line3(cent, add(aux2,cent,fplane))))
     })
 
+    if (params.display==="centroid!=normal +face+top"){
+      S = []
+      h.polygons.forEach((p) => {
+          vs = p.vertices
+          prevprev = vs[vs.length-2]
+          prev = vs[vs.length-1]
+          val = solve([prevprev,prev,vs[0]],[n,n,n])
+          vs.forEach((p) => {
+            console.assert(b = vec3.equals(val, solve([prevprev,prev,p],[n,n,n]))); assert(b)
+            prevprev = prev
+            prev = p
+          })
+          S.push(val)
+        }
+      )
+
+      s = colorize([0.5,0.5,0.5,0.8], geom3.fromPointsConvex(S))
+
+      return [outside, edges, s]
+    }
+
     h.polygons = h.polygons.reduce((a,p) => a=[...a, p, poly3.invert(p)], [])
   
     if (params.display.startsWith("faces+normals")){
@@ -295,7 +322,7 @@ function getParameterDefinitions() {
     { name: 'cmp', type: 'choice', values: ['≤ n', '= n', "= pq"], initial: '≤ n', caption: 'x²+y²+z²' },
     { name: 'p', type: 'choice', values: [5, 13, 17, 29, 37, 41, 53, 61, 73, 89, 97], initial: 13, caption: 'p' },
     { name: 'q', type: 'choice', values: [5, 13, 17, 29, 37, 41, 53, 61, 73, 89, 97], initial: 17, caption: 'q' },
-    { name: 'display', type: 'choice', values: ['faces', 'faces+normals', 'faces+normals(+centroids)', 'centroid!=normal +face', 'edges+vertices (slow)', 'faces+edges+vertices (slower)', 'sphere+edges+vertices (slowest)'], initial: 'faces', caption: 'display' },
+    { name: 'display', type: 'choice', values: ['faces', 'faces+normals', 'faces+normals(+centroids)', 'centroid!=normal +face', 'centroid!=normal +face+top', 'edges+vertices (slow)', 'faces+edges+vertices (slower)', 'sphere+edges+vertices (slowest)'], initial: 'faces', caption: 'display' },
     { name: 'text', type: 'checkbox', checked: false, caption: 'text:' },
   ]
 }
