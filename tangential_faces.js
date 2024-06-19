@@ -58,9 +58,17 @@ function main(params) {
           });
         }
       )
-  console.log(JSON.stringify(S))
+  //console.log(JSON.stringify(S))
+  g = geom3.fromPointsConvex(S)
+  nfaces = g.polygons.length
+  nedges = 0
+  g.polygons.forEach((p) => nedges += p.vertices.length)
+  nedges /= 2
+  nvertices = nedges + 2 - nfaces
+  console.log("dual: #faces="+nfaces+" #edges="+nedges+" #vertices="+nvertices)
+
   return [colorize([0,0,1,0.5],h), u.map((v)=>fastvertex(v)), 
-          colorize([0.5,0.5,0.5,0.6], geom3.fromPointsConvex(S)),
+          colorize([0.5,0.5,0.5,0.6], g),
           colorize([1,1,1], fastvertex(c))]
 }
 
