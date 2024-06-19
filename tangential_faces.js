@@ -86,7 +86,7 @@ function main(params) {
   return [colorize([0,0,1,0.5],h), u.map((v)=>fastvertex(v)), 
           colorize([0.5,0.5,0.5,0.6], g),
           colorize([1,1,1], fastvertex(c)),
-          u.map((p)=> colorize([1,1,1], line3(c,p)))]
+          u.map((p)=> colorize([0.5,0.5,0.5], line3(c,p)))]
 }
 
 function getParameterDefinitions() {
