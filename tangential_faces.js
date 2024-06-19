@@ -29,7 +29,7 @@ function main(params) {
   h = geom3.fromPointsConvex(out) 
   v = h.polygons.map((o)=>o.vertices).flat()
   u = [...
-    v.reduce((m,a) => (k=a.join(""),m.has(k)?m:m.set(k,a)), new Map())
+    v.reduce((m,a) => (k=a.join("@"),m.has(k)?m:m.set(k,a)), new Map())
       .values()
   ];
 
