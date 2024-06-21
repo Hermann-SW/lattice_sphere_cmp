@@ -19,3 +19,12 @@ In case of cmp="= pq" output of [r3](https://en.wikipedia.org/wiki/Sum_of_square
 ![res/Peek_2024-05-29_21-50.gif](res/Peek_2024-05-29_21-50.gif)
 
 ![res/new_text.png](res/new_text.png)
+
+Dual of lattice sphere (dual vertices determined with small system of 3 linear equations solver for each face):  
+![res/dual_of_lattice_sphere.png](res/dual_of_lattice_sphere.png)
+
+
+Experimental:  
+https://hermann-sw.github.io/lattice_sphere_cmp/tangential_faces.html
+
+![res/tangential_faces.recording.mp4.gif](res/tangential_faces.recording.mp4.gif)
