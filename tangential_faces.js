@@ -1,3 +1,6 @@
+// https://hermann-sw.github.io/lattice_sphere_cmp/tangential_faces.html
+// https://github.com/Hermann-sw/lattice_sphere_cmp/
+//
 const jscad = require('@jscad/modeling')
 const { geom3 } = jscad.geometries
 const { colorize } = jscad.colors
