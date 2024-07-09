@@ -1,5 +1,6 @@
 // https://hermann-sw.github.io/lattice_sphere_cmp/mse.html
 // https://github.com/Hermann-sw/lattice_sphere_cmp/
+// https://math.stackexchange.com/questions/4943645/what-is-the-correct-term-for-maximal-minimal-thickness-of-convex-hull-in-%e2%84%9d%c2%b3
 //
 const jscad = require('@jscad/modeling')
 const { geom3 } = jscad.geometries
@@ -88,11 +89,38 @@ function main(params) {
     }
   })
 
+  mvs=[]
+  out.forEach(u => mvs.push(mul(G,u)))
+
+  h2 = geom3.fromPointsConvex(mvs) 
+
+  let ma=[mvs[0],mvs[1],vec3.distance(mvs[0],mvs[1])]
+
+  mvs.forEach(u => {
+    mvs.forEach(v => { if(u!=v){
+      if(ma[2]<vec3.distance(u,v)){
+        ma=[u,v,vec3.distance(u,v)]
+      }
+    }
+    })
+  })  
+  console.log("max: ",ma[2])
+
+  wd = []//[colorize([0,1,0,0.5],h2)]
+  wd.push(colorize([1.0,1.0,1.0],edge(ma[0],ma[1])))
+
   return [
     colorize([0,0,1,0.5],h),
     colorize([1,0,0],vs),
-    colorize([0,1,0],es)
+    params.widdia ? wd
+                  : colorize([0,1,0],es)
   ]
 }
 
-module.exports = { main }
+function getParameterDefinitions() {
+  return [
+    { name: 'widdia', type: 'checkbox', checked: false, caption: 'width/diameter:' }
+  ]
+}
+
+module.exports = { main, getParameterDefinitions }
