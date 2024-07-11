@@ -32,8 +32,8 @@ function ptc(ang2) {
     [
       gs(ang2),
       rotate([degToRad(90),0,degToRad(180)-ang2],
-        translate([9.8,-16.5,1.7],
-          rotate([0,0,degToRad(90)],
+        translate([9.8,-16.5,-2.5],
+          rotate([0,0,degToRad(270)],
             c
           )
         )
