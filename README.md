@@ -1,3 +1,14 @@
+The Makefile in this repo was used to publisch .html pages with redirect to https://jscad.app of the JSCAD applications discussed below.  
+
+That is not needed anymore, the (raw) .js file JSCAD models of this repo can directly be used by appending the raw file URL to <kbd>https://jscad.app/#</kbd>. Below are the three JSCAD apps from this repo with those URLs to execute directly in your browser:  
+
+
+- https://jscad.app/#https://github.com/Hermann-SW/lattice_sphere_cmp/raw/refs/heads/main/lattice_sphere_cmp.js  
+- https://jscad.app/#https://github.com/Hermann-SW/lattice_sphere_cmp/raw/refs/heads/main/tangential_faces.js  
+- https://jscad.app/#https://github.com/Hermann-SW/lattice_sphere_cmp/raw/refs/heads/main/pt.js  
+
+
+
 # lattice_sphere_cmp
 
 $hull(p\in\mathbb{Z}^3, norml2(p)==n)$ for $n\neq 4^a(8b+7)$ is a [lattice polyhedron](https://en.wikipedia.org/wiki/Polyhedron#Lattice_polyhedra). By [Legendre's three-square theorem](https://en.wikipedia.org/wiki/Legendre%27s_three-square_theorem), such $n$ have representation(s) as the sum of $3$ squares.
