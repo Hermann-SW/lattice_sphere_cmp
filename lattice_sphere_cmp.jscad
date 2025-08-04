@@ -336,7 +336,7 @@ function getParameterDefinitions() {
     { name: 'cmp', type: 'choice', values: ['≤ n', '= n', "= pq"], initial: '= pq', caption: 'x²+y²+z²' },
     { name: 'p', type: 'choice', values: [5, 13, 17, 29, 37, 41, 53, 61, 73, 89, 97], initial: 17, caption: 'p' },
     { name: 'q', type: 'choice', values: [5, 13, 17, 29, 37, 41, 53, 61, 73, 89, 97], initial: 37, caption: 'q' },
-    { name: 'display', type: 'choice', values: ['faces', 'faces+normals', 'faces+normals(+centroids)', 'centroid!=normal +face', 'centroid!=normal +face+top', 'edges+vertices (slow)', 'faces+edges+vertices (slower)', 'sphere+edges+vertices (slowest)'], initial: 'faces', caption: 'display' },
+    { name: 'display', type: 'choice', values: ['faces', 'faces+normals', 'faces+normals(+centroids)', 'centroid!=normal +face', 'centroid!=normal +face+top', 'edges+vertices (slow)', 'faces+edges+vertices (slower)', 'sphere+edges+vertices (slowest)'], initial: 'faces+edges+vertices (slower)', caption: 'display' },
     { name: 'text', type: 'checkbox', checked: false, caption: 'text:' },
   ]
 }
