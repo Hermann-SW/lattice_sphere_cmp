@@ -1,3 +1,4 @@
+// best view speed with Firefox
 // https://github.com/Hermann-sw/lattice_sphere_cmp
 // https://math.stackexchange.com/questions/4917740/which-faces-does-sphere-lattice-polyhedron-operatornamehullp-in-mathbbz
 //
